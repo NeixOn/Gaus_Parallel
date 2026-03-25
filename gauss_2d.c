@@ -1,0 +1,81 @@
+#include "gauss.h"
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+int gauss_2d(int n, double A[n][n], double b[n], double x[n]) {
+    // Создаём копии
+    double (*a)[n] = malloc(sizeof(double[n][n]));
+    double *bb = malloc(n * sizeof(double));
+
+    // Копируем
+    for (int i = 0; i < n; i++) {
+        bb[i] = b[i];
+        for (int j = 0; j < n; j++) {
+            a[i][j] = A[i][j];
+        }
+    }
+
+    // Прямой ход
+    for (int k = 0; k < n - 1; k++) {
+        // Поиск главного элемента
+        int maxRow = k;
+        double maxVal = fabs(a[k][k]);
+        for (int i = k + 1; i < n; i++) {
+            if (fabs(a[i][k]) > maxVal) {
+                maxVal = fabs(a[i][k]);
+                maxRow = i;
+            }
+        }
+
+        // Перестановка строк
+        if (maxRow != k) {
+            for (int j = k; j < n; j++) {
+                double tmp = a[k][j];
+                a[k][j] = a[maxRow][j];
+                a[maxRow][j] = tmp;
+            }
+            double tmp = bb[k];
+            bb[k] = bb[maxRow];
+            bb[maxRow] = tmp;
+        }
+
+        // Проверка на вырожденность
+        if (fabs(a[k][k]) < 1e-12) {
+            printf("Ошибка: матрица вырождена на шаге %d\n", k);
+            free(a);
+            free(bb);
+            return 0;
+        }
+
+        // Обнуление
+        for (int i = k + 1; i < n; i++) {
+            double factor = a[i][k] / a[k][k];
+            for (int j = k; j < n; j++) {
+                a[i][j] -= factor * a[k][j];
+            }
+            bb[i] -= factor * bb[k];
+        }
+    }
+
+    // Проверка последней диагонали
+    if (fabs(a[n-1][n-1]) < 1e-12) {
+        printf("Ошибка: матрица вырождена!\n");
+        free(a);
+        free(bb);
+        return 0;
+    }
+
+    // Обратный ход
+    for (int i = n - 1; i >= 0; i--) {
+        double sum = bb[i];
+        for (int j = i + 1; j < n; j++) {
+            sum -= a[i][j] * x[j];
+        }
+        x[i] = sum / a[i][i];
+    }
+
+    free(a);
+    free(bb);
+    return 1;
+}

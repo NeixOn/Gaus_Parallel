@@ -1,0 +1,14 @@
+# CLion
+cmake-build-debug/
+.idea/
+
+# Windows
+*.exe
+*.obj
+*.o
+*.lib
+*.dll
+
+# Временные файлы
+*.tmp
+*.swp
