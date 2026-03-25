@@ -3,17 +3,11 @@
 #include <math.h>
 #include <stdlib.h>
 
-int gauss_1d(int n, double *A, double *b, double *x) {
+double* gauss_1d(int n, double *A, double *b){
+    double *x = malloc(n * sizeof(double));
     // Выделяем память под копии
     double *a = malloc(n * n * sizeof(double));
     double *bb = malloc(n * sizeof(double));
-
-    if (!a || !bb) {
-        printf("Ошибка выделения памяти\n");
-        free(a);
-        free(bb);
-        return 0;
-    }
 
     // Копируем данные
     for (int i = 0; i < n; i++) {
@@ -84,5 +78,5 @@ int gauss_1d(int n, double *A, double *b, double *x) {
 
     free(a);
     free(bb);
-    return 1;
+    return x;
 }

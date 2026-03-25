@@ -3,7 +3,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-int gauss_2d(int n, double A[n][n], double b[n], double x[n]) {
+double* gauss_2d(int n, double A[n][n], double b[n]){
+    double *x = malloc(n * sizeof(double));
     // Создаём копии
     double (*a)[n] = malloc(sizeof(double[n][n]));
     double *bb = malloc(n * sizeof(double));
@@ -77,5 +78,5 @@ int gauss_2d(int n, double A[n][n], double b[n], double x[n]) {
 
     free(a);
     free(bb);
-    return 1;
+    return x;
 }

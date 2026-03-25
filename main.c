@@ -2,125 +2,158 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <stdbool.h>
 #include "gauss.h"
 
-#define N 2500  // Размер системы
+#define N 2000  // Для теста маленький размер, чтобы видеть вывод
 
-// Выбираем метод: 1 - двумерный, 2 - одномерный
-#define METHOD 1
+// Флаг вывода матриц (true - выводить, false - не выводить)
+#define SHOW_MATRICES false
 
 int main() {
     system("chcp 65001");
-    // Для двумерного метода
-#if METHOD == 1
-    double (*A)[N] = malloc(sizeof(double[N][N]));
-    double *b = malloc(N * sizeof(double));
-    double *x = malloc(N * sizeof(double));
 
-    if (!A || !b || !x) {
+    // Выделяем память
+    double (*A2D)[N] = malloc(sizeof(double[N][N]));
+    double *A1D = malloc(N * N * sizeof(double));
+    double *b = malloc(N * sizeof(double));
+    double *x2 = NULL;
+    double *x1 = NULL;
+
+    if (!A2D || !A1D || !b) {
         printf("Ошибка выделения памяти\n");
+        free(A2D);
+        free(A1D);
+        free(b);
         return 1;
     }
 
-    // Заполняем матрицу (диагональное преобладание)
+    // СОЗДАЁМ ОДНУ МАТРИЦУ
+    printf("Создание системы %d x %d...\n", N, N);
     srand(time(NULL));
     for (int i = 0; i < N; i++) {
         double rowSum = 0;
         for (int j = 0; j < N; j++) {
+            double val;
             if (i == j) {
-                A[i][j] = (double)(rand() % 100 + 50);
+                val = (double)(rand() % 100 + 50);
             } else {
-                A[i][j] = (double)(rand() % 20 - 10);
-                rowSum += fabs(A[i][j]);
+                val = (double)(rand() % 20 - 10);
+                rowSum += fabs(val);
             }
+            A2D[i][j] = val;
+            A1D[i * N + j] = val;
         }
-        A[i][i] += rowSum + 1;
+        A2D[i][i] += rowSum + 1;
+        A1D[i * N + i] += rowSum + 1;
         b[i] = (double)(rand() % 200 - 100);
     }
+    printf("Система создана\n\n");
 
-    printf("Система %d x %d создана (двумерный массив)\n", N, N);
+    // ВЫВОД МАТРИЦ (если флаг включён)
+    if (SHOW_MATRICES) {
+        printf("========== МАТРИЦА A (2D представление) ==========\n");
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                printf("%8.2f ", A2D[i][j]);
+            }
+            printf("| %8.2f\n", b[i]);
+        }
 
-    clock_t start = clock();
-    int success = gauss_2d(N, A, b, x);
-    clock_t end = clock();
-    double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
+        printf("\n========== МАТРИЦА A (1D представление) ==========\n");
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                printf("%8.2f ", A1D[i * N + j]);
+            }
+            printf("| %8.2f\n", b[i]);
+        }
 
-#endif
-
-    // Для одномерного метода
-#if METHOD == 2
-    double *A = malloc(N * N * sizeof(double));
-    double *b = malloc(N * sizeof(double));
-    double *x = malloc(N * sizeof(double));
-
-    if (!A || !b || !x) {
-        printf("Ошибка выделения памяти\n");
-        return 1;
-    }
-
-    // Заполняем матрицу (диагональное преобладание)
-    srand(time(NULL));
-    for (int i = 0; i < N; i++) {
-        double rowSum = 0;
-        for (int j = 0; j < N; j++) {
-            if (i == j) {
-                A[i * N + j] = (double)(rand() % 100 + 50);
-            } else {
-                A[i * N + j] = (double)(rand() % 20 - 10);
-                rowSum += fabs(A[i * N + j]);
+        // Проверка, что матрицы одинаковые
+        bool identical = true;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (fabs(A2D[i][j] - A1D[i * N + j]) > 1e-10) {
+                    identical = false;
+                    break;
+                }
             }
         }
-        A[i * N + i] += rowSum + 1;
-        b[i] = (double)(rand() % 200 - 100);
+        printf("\nМатрицы одинаковые: %s\n", identical ? "ДА" : "НЕТ");
+        printf("================================================\n\n");
     }
 
-    printf("Система %d x %d создана (одномерный массив)\n", N, N);
-
+    // Замер для двумерного метода
+    printf("Двумерный массив...\n");
     clock_t start = clock();
-    int success = gauss_1d(N, A, b, x);
+    x2 = gauss_2d(N, A2D, b);
     clock_t end = clock();
-    double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
+    double time_2d = (double)(end - start) / CLOCKS_PER_SEC;
 
-#endif
+    // Замер для одномерного метода
+    printf("Одномерный массив...\n");
+    start = clock();
+    x1 = gauss_1d(N, A1D, b);
+    end = clock();
+    double time_1d = (double)(end - start) / CLOCKS_PER_SEC;
 
-    if (success) {
-        printf("Метод Гаусса выполнен успешно\n");
-        printf("Время выполнения: %.4f секунд\n", time_spent);
 
-        // Выводим первые 5 решений
-        printf("\nПервые 5 решений:\n");
-        for (int i = 0; i < (N < 5 ? N : 5); i++) {
-            printf("x[%d] = %.6f\n", i, x[i]);
+
+    // Проверка решений (первые 5)
+    if (x2 && x1) {
+        printf("\nПервые 5 решений (2D):\n");
+        for (int i = 0; i < 5 && i < N; i++) {
+            printf("x[%d] = %.6f\n", i, x2[i]);
         }
 
-        // Проверка
-        printf("\nПроверка (Ax - b) для первых 5 уравнений:\n");
-#if METHOD == 1
-        for (int i = 0; i < (N < 5 ? N : 5); i++) {
+        printf("\nПервые 5 решений (1D):\n");
+        for (int i = 0; i < 5 && i < N; i++) {
+            printf("x[%d] = %.6f\n", i, x1[i]);
+        }
+
+        // Проверка подстановкой для 2D
+        printf("\nПроверка (Ax = b) для 2D:\n");
+        for (int i = 0; i < 5 && i < N; i++) {
             double sum = 0;
             for (int j = 0; j < N; j++) {
-                sum += A[i][j] * x[j];
+                sum += A2D[i][j] * x2[j];
             }
-            printf("|%d: %.2e|\n", i, fabs(sum - b[i]));
+            printf("Ур%d: %.6f = %.6f\n", i, sum, b[i]);
         }
-#endif
 
-#if METHOD == 2
-        for (int i = 0; i < (N < 5 ? N : 5); i++) {
+        // Проверка подстановкой для 1D
+        printf("\nПроверка (Ax = b) для 1D:\n");
+        for (int i = 0; i < 5 && i < N; i++) {
             double sum = 0;
             for (int j = 0; j < N; j++) {
-                sum += A[i * N + j] * x[j];
+                sum += A1D[i * N + j] * x1[j];
             }
-            printf("|%d: %.2e|\n", i, fabs(sum - b[i]));
+            printf("Ур%d: %.6f = %.6f\n", i, sum, b[i]);
         }
-#endif
-    } else {
-        printf("Ошибка при решении системы\n");
     }
 
-    free(A);
+    // Освобождаем память
+    free(A2D);
+    free(A1D);
     free(b);
-    free(x);
+    if (x2) free(x2);
+    if (x1) free(x1);
+
+
+    // Вывод результатов
+    printf("\n========================================\n");
+    printf("РЕЗУЛЬТАТЫ:\n");
+    printf("Двумерный массив: %.4f секунд\n", time_2d);
+    printf("Одномерный массив: %.4f секунд\n", time_1d);
+
+    if (time_2d < time_1d) {
+        printf("\nДвумерный быстрее на %.2f%%\n", (time_1d - time_2d) / time_1d * 100);
+    } else if (time_1d < time_2d) {
+        printf("\nОдномерный быстрее на %.2f%%\n", (time_2d - time_1d) / time_2d * 100);
+    } else {
+        printf("\nВремя одинаковое\n");
+    }
+    printf("========================================\n");
+
 
     return 0;
 }
