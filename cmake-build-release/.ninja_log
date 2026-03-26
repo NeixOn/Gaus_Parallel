@@ -1,0 +1,9 @@
+# ninja log v6
+4	17	7962255165096608	clean	64626adc15be3536
+3	293	7962255188516523	CMakeFiles/Gaus_Parallel.dir/main.c.obj	7e18e36c6d735f25
+24	364	7962255188726543	CMakeFiles/Gaus_Parallel.dir/test.c.obj	fd5d3d8b8f3ce1f9
+12	400	7962255188596540	CMakeFiles/Gaus_Parallel.dir/gauss_2d.c.obj	cf2beb1dffb5f8c2
+17	403	7962255188656526	CMakeFiles/Gaus_Parallel.dir/gauss_1d.c.obj	828631f9e015c06a
+30	506	7962255188776584	CMakeFiles/Gaus_Parallel.dir/gauss_2d_parallel.c.obj	6da49468e6d2445
+36	549	7962255188836529	CMakeFiles/Gaus_Parallel.dir/gauss_1d_parallel.c.obj	5c61dcbe84404c0c
+549	686	7962255193966590	Gaus_Parallel.exe	9758b0c706e46e78

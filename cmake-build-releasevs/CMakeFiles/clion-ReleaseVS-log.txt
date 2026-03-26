@@ -1,0 +1,12 @@
+"C:\Program Files\JetBrains\CLion2024.2\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Release "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion2024.2/bin/ninja/win/x64/ninja.exe" -G Ninja -S C:\Users\developer\CLionProjects\Gaus_Parallel -B C:\Users\developer\CLionProjects\Gaus_Parallel\cmake-build-releasevs
+-- The C compiler identification is MSVC 19.44.35211.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Found MPI_C: C:/Program Files (x86)/Microsoft SDKs/MPI/Lib/x64/msmpi.lib (found version "2.0")
+-- Found MPI: TRUE (found version "2.0")
+-- Configuring done (2.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: C:/Users/developer/CLionProjects/Gaus_Parallel/cmake-build-releasevs

@@ -1,0 +1,3 @@
+C:/Users/developer/CLionProjects/Gaus_Parallel/CMakeFiles/Gaus_Parallel.dir
+C:/Users/developer/CLionProjects/Gaus_Parallel/CMakeFiles/ALL_BUILD.dir
+C:/Users/developer/CLionProjects/Gaus_Parallel/CMakeFiles/ZERO_CHECK.dir
