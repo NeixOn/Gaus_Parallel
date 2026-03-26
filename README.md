@@ -38,3 +38,20 @@ Speedup = T<sub>seq</sub> / T<sub>par</sub> (значение > 1 означае
 3. **1D-представление** (плоский массив) незначительно быстрее 2D (массив указателей) за счет лучшей локальности данных
 4. **Microsoft MPI** на Windows вносит дополнительные накладные расходы, снижая эффективность параллелизации
 5. Для больших матриц (>5000) рекомендуется использовать Linux с OpenMPI или специализированные библиотеки (BLAS/LAPACK)
+
+## Команды сборки
+# Конфигурация CMake (автоматически)
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -B cmake-build-debug
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -B cmake-build-release
+# Фактическая компиляция (что видно в логах)
+gcc -g -O0 -c gauss_2d_parallel.c -o gauss_2d_parallel.obj    # Debug
+gcc -O3 -c gauss_2d_parallel.c -o gauss_2d_parallel.obj        # Release
+gcc -o Gaus_Parallel.exe *.obj -lmsmpi                          # Линковка
+
+# Конфигурация CMake
+cmake -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Debug -B cmake-build-debugvs
+cmake -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -B cmake-build-releasevs
+# Фактическая компиляция
+cl /Zi /Od /c gauss_2d_parallel.c           # DebugVS (но -O0 не поддерживается, отсюда warning)
+cl /O2 /c gauss_2d_parallel.c               # ReleaseVS (но -O3 не поддерживается, отсюда warning)
+link /OUT:Gaus_Parallel.exe *.obj msmpi.lib # Линковка
