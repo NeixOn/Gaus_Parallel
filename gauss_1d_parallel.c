@@ -1,0 +1,211 @@
+#include <mpi.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+
+#define EPS 1e-9
+
+// ============================================================================
+// Вспомогательная функция: обмен двух строк (1D версия)
+// ============================================================================
+static void swap_rows_1d(double *matrix, int i, int j, int n_cols, int n) {
+    if (i == j) return;
+    for (int col = 0; col < n_cols; col++) {
+        double temp = matrix[i * n_cols + col];
+        matrix[i * n_cols + col] = matrix[j * n_cols + col];
+        matrix[j * n_cols + col] = temp;
+    }
+}
+
+// ============================================================================
+// Поиск строки с максимальным элементом (1D версия)
+// ============================================================================
+static int find_max_row_global_1d(double *local_matrix, int local_rows, int n,
+                                  int col, int rank, int size, MPI_Comm comm) {
+
+    double local_max_val = 0.0;
+    int local_max_row = -1;
+
+    for (int i = 0; i < local_rows; i++) {
+        double val = fabs(local_matrix[i * (n + 1) + col]);
+        if (val > local_max_val) {
+            local_max_val = val;
+            local_max_row = i;
+        }
+    }
+
+    double global_max_val;
+    MPI_Allreduce(&local_max_val, &global_max_val, 1, MPI_DOUBLE, MPI_MAX, comm);
+
+    int owner_rank = -1;
+    if (local_max_row != -1 && fabs(local_max_val - global_max_val) < EPS) {
+        owner_rank = rank;
+    }
+
+    int temp_owner = owner_rank;
+    MPI_Allreduce(&temp_owner, &owner_rank, 1, MPI_INT, MPI_MAX, comm);
+
+    int global_row = -1;
+    if (rank == owner_rank && local_max_row != -1) {
+        int rows_per_proc = (n + size - 1) / size;
+        global_row = owner_rank * rows_per_proc + local_max_row;
+    }
+
+    MPI_Bcast(&global_row, 1, MPI_INT, owner_rank, comm);
+    return global_row;
+}
+
+// ============================================================================
+// Прямой ход метода Гаусса (1D версия)
+// ============================================================================
+static void gaussian_elimination_1d(double *local_matrix, int local_rows, int n,
+                                    int rank, int size, MPI_Comm comm) {
+
+    double *pivot_row = (double *)malloc(n * sizeof(double));
+    int rows_per_proc = (n + size - 1) / size;
+    int n_cols = n + 1;
+
+    for (int col = 0; col < n; col++) {
+        int global_pivot_row = find_max_row_global_1d(local_matrix, local_rows, n,
+                                                      col, rank, size, comm);
+
+        int pivot_owner = global_pivot_row / rows_per_proc;
+        int local_pivot_idx = global_pivot_row % rows_per_proc;
+
+        if (rank == pivot_owner && local_pivot_idx < local_rows) {
+            memcpy(pivot_row, &local_matrix[local_pivot_idx * n_cols], n * sizeof(double));
+        }
+
+        MPI_Bcast(pivot_row, n, MPI_DOUBLE, pivot_owner, comm);
+
+        if (fabs(pivot_row[col]) < EPS) {
+            free(pivot_row);
+            MPI_Abort(comm, 1);
+            return;
+        }
+
+        for (int i = 0; i < local_rows; i++) {
+            int global_i = rank * rows_per_proc + i;
+            if (global_i == global_pivot_row) continue;
+
+            double current_val = local_matrix[i * n_cols + col];
+            if (fabs(current_val) > EPS) {
+                double factor = current_val / pivot_row[col];
+                for (int j = col; j < n; j++) {
+                    local_matrix[i * n_cols + j] -= factor * pivot_row[j];
+                }
+                local_matrix[i * n_cols + col] = 0.0;
+            }
+        }
+    }
+
+    free(pivot_row);
+}
+
+// ============================================================================
+// Обратный ход (1D версия)
+// ============================================================================
+static void back_substitution_1d(double *local_matrix, int local_rows, int n,
+                                 int rank, int size, double *solution, MPI_Comm comm) {
+
+    double *x = (double *)malloc(n * sizeof(double));
+    int rows_per_proc = (n + size - 1) / size;
+    int n_cols = n + 1;
+
+    for (int i = n - 1; i >= 0; i--) {
+        int owner = i / rows_per_proc;
+        int local_idx = i % rows_per_proc;
+
+        double sum = 0.0;
+
+        if (rank == owner && local_idx < local_rows) {
+            for (int j = i + 1; j < n; j++) {
+                sum += local_matrix[local_idx * n_cols + j] * x[j];
+            }
+            x[i] = (local_matrix[local_idx * n_cols + n] - sum) / local_matrix[local_idx * n_cols + i];
+        }
+
+        MPI_Bcast(&x[i], 1, MPI_DOUBLE, owner, comm);
+    }
+
+    memcpy(solution, x, n * sizeof(double));
+    free(x);
+}
+
+// ============================================================================
+// Генерация матрицы (1D версия)
+// ============================================================================
+static void generate_matrix_distributed_1d(double *local_matrix, int local_rows,
+                                           int n, int size, int rank, int global_seed) {
+
+    int rows_per_proc = (n + size - 1) / size;
+    int n_cols = n + 1;
+
+    for (int i = 0; i < local_rows; i++) {
+        int global_row = rank * rows_per_proc + i;
+        srand(global_seed + global_row * 1000 + rank);
+
+        double diag_sum = 0.0;
+
+        for (int j = 0; j < n; j++) {
+            if (j != global_row) {
+                local_matrix[i * n_cols + j] = (rand() % 21) - 10;
+                diag_sum += fabs(local_matrix[i * n_cols + j]);
+            }
+        }
+
+        local_matrix[i * n_cols + global_row] = diag_sum + 1.0 + (rand() % 10);
+        local_matrix[i * n_cols + n] = (rand() % 101) - 50;
+    }
+}
+
+// ============================================================================
+// Главная функция (1D версия)
+// ============================================================================
+int gauss_1d_parallel(int N) {
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int n = N;
+    int global_seed = 42;
+
+    int rows_per_proc = (n + size - 1) / size;
+    int local_rows = (rank < size - 1) ? rows_per_proc : (n - rank * rows_per_proc);
+    if (rank == size - 1) {
+        local_rows = n - rank * rows_per_proc;
+        if (local_rows < 0) local_rows = 0;
+    }
+
+    int n_cols = n + 1;
+    double *local_matrix = (double *)malloc(local_rows * n_cols * sizeof(double));
+
+    double start_time, end_time, exec_time;
+
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    generate_matrix_distributed_1d(local_matrix, local_rows, n, size, rank, global_seed);
+
+    start_time = MPI_Wtime();
+
+    gaussian_elimination_1d(local_matrix, local_rows, n, rank, size, MPI_COMM_WORLD);
+
+    double *solution = (double *)malloc(n * sizeof(double));
+    back_substitution_1d(local_matrix, local_rows, n, rank, size, solution, MPI_COMM_WORLD);
+
+    end_time = MPI_Wtime();
+
+    exec_time = end_time - start_time;
+    double max_time;
+    MPI_Reduce(&exec_time, &max_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        printf("time gaussParallel_1D %.4f second\n", max_time);
+    }
+
+    free(local_matrix);
+    free(solution);
+    return 0;
+}
