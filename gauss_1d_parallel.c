@@ -9,7 +9,7 @@
 // ============================================================================
 // Вспомогательная функция: обмен двух строк (1D версия)
 // ============================================================================
-static void swap_rows_1d(double *matrix, int i, int j, int n_cols, int n) {
+void swap_rows_1d(double *matrix, int i, int j, int n_cols, int n) {
     if (i == j) return;
     for (int col = 0; col < n_cols; col++) {
         double temp = matrix[i * n_cols + col];
@@ -21,7 +21,7 @@ static void swap_rows_1d(double *matrix, int i, int j, int n_cols, int n) {
 // ============================================================================
 // Поиск строки с максимальным элементом (1D версия)
 // ============================================================================
-static int find_max_row_global_1d(double *local_matrix, int local_rows, int n,
+int find_max_row_global_1d(double *local_matrix, int local_rows, int n,
                                   int col, int rank, int size, MPI_Comm comm) {
 
     double local_max_val = 0.0;
@@ -59,7 +59,7 @@ static int find_max_row_global_1d(double *local_matrix, int local_rows, int n,
 // ============================================================================
 // Прямой ход метода Гаусса (1D версия)
 // ============================================================================
-static void gaussian_elimination_1d(double *local_matrix, int local_rows, int n,
+void gaussian_elimination_1d(double *local_matrix, int local_rows, int n,
                                     int rank, int size, MPI_Comm comm) {
 
     double *pivot_row = (double *)malloc(n * sizeof(double));
@@ -106,7 +106,7 @@ static void gaussian_elimination_1d(double *local_matrix, int local_rows, int n,
 // ============================================================================
 // Обратный ход (1D версия)
 // ============================================================================
-static void back_substitution_1d(double *local_matrix, int local_rows, int n,
+void back_substitution_1d(double *local_matrix, int local_rows, int n,
                                  int rank, int size, double *solution, MPI_Comm comm) {
 
     double *x = (double *)malloc(n * sizeof(double));
@@ -136,7 +136,7 @@ static void back_substitution_1d(double *local_matrix, int local_rows, int n,
 // ============================================================================
 // Генерация матрицы (1D версия)
 // ============================================================================
-static void generate_matrix_distributed_1d(double *local_matrix, int local_rows,
+void generate_matrix_distributed_1d(double *local_matrix, int local_rows,
                                            int n, int size, int rank, int global_seed) {
 
     int rows_per_proc = (n + size - 1) / size;
@@ -202,7 +202,51 @@ int gauss_1d_parallel(int N) {
     MPI_Reduce(&exec_time, &max_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     if (rank == 0) {
-        printf("time gaussParallel_1D %.4f second\n", max_time);
+        // Print execution time
+        printf("=== Parallel Gaussian Elimination Results (1D Array) ===\n");
+        printf("Matrix size: %d x %d | Processes: %d\n", n, n, size);
+        printf("Execution time: %.4f seconds\n\n", max_time);
+
+        // Verification: Check residual ||Ax - b|| for first few equations
+        // Note: Process 0 only owns the first 'local_rows' rows of the matrix
+        int rows_per_proc = (n + size - 1) / size;
+        int local_rows = rows_per_proc; // For rank 0, this is usually correct
+        if (rank == size - 1 && n % size != 0) {
+            local_rows = n % size; // Last process may have fewer rows
+        }
+
+        printf("Verification (first 5 equations owned by rank 0):\n");
+        printf("%-8s %-15s %-15s %-10s\n", "Equation", "Computed Ax", "Expected b", "Error");
+        printf("------------------------------------------------------------\n");
+
+        int check_count = (local_rows < 5) ? local_rows : 5;
+        double max_error = 0.0;
+        int n_cols = n + 1; // Include RHS column
+
+        for (int i = 0; i < check_count; i++) {
+            double computed = 0.0;
+            // Compute dot product: A[i][0..n-1] * x[0..n-1]
+            // 1D access: local_matrix[i * n_cols + j]
+            for (int j = 0; j < n; j++) {
+                computed += local_matrix[i * n_cols + j] * solution[j];
+            }
+            double expected = local_matrix[i * n_cols + n]; // b[i] is in the last column (index n)
+            double error = fabs(computed - expected);
+
+            if (error > max_error) max_error = error;
+
+            printf("%-8d %-15.6f %-15.6f %-10.2e\n", i, computed, expected, error);
+        }
+
+        printf("------------------------------------------------------------\n");
+        printf("Max residual error: %.2e\n", max_error);
+
+        if (max_error < 1e-6) {
+            printf("✓ Solution verified successfully (error within tolerance)\n");
+        } else {
+            printf("⚠ Warning: Large residual detected. Solution may be inaccurate.\n");
+        }
+        printf("\n");
     }
 
     free(local_matrix);

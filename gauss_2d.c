@@ -3,13 +3,17 @@
 #include <math.h>
 #include <stdlib.h>
 
-double* gauss_2d(int n, double A[n][n], double b[n]){
+double* gauss_2d(int n, double **A, double *b) {
     double *x = malloc(n * sizeof(double));
-    // Создаём копии
-    double (*a)[n] = malloc(sizeof(double[n][n]));
+
+    // ✅ Выделяем память как массив указателей (вместо VLA)
+    double **a = (double **)malloc(n * sizeof(double *));
+    for (int i = 0; i < n; i++) {
+        a[i] = (double *)malloc(n * sizeof(double));
+    }
     double *bb = malloc(n * sizeof(double));
 
-    // Копируем
+    // Копируем данные
     for (int i = 0; i < n; i++) {
         bb[i] = b[i];
         for (int j = 0; j < n; j++) {
@@ -44,9 +48,11 @@ double* gauss_2d(int n, double A[n][n], double b[n]){
         // Проверка на вырожденность
         if (fabs(a[k][k]) < 1e-12) {
             printf("Ошибка: матрица вырождена на шаге %d\n", k);
+            for (int i = 0; i < n; i++) free(a[i]);
             free(a);
             free(bb);
-            return 0;
+            free(x);
+            return NULL;
         }
 
         // Обнуление
@@ -62,9 +68,11 @@ double* gauss_2d(int n, double A[n][n], double b[n]){
     // Проверка последней диагонали
     if (fabs(a[n-1][n-1]) < 1e-12) {
         printf("Ошибка: матрица вырождена!\n");
+        for (int i = 0; i < n; i++) free(a[i]);
         free(a);
         free(bb);
-        return 0;
+        free(x);
+        return NULL;
     }
 
     // Обратный ход
@@ -76,6 +84,8 @@ double* gauss_2d(int n, double A[n][n], double b[n]){
         x[i] = sum / a[i][i];
     }
 
+    // ✅ Освобождаем память (двумерный массив)
+    for (int i = 0; i < n; i++) free(a[i]);
     free(a);
     free(bb);
     return x;

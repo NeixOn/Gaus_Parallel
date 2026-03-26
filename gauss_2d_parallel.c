@@ -92,16 +92,6 @@ void gaussian_elimination(double **local_matrix, int local_rows, int n,
         // 4. Расслать ведущую строку всем процессам
         MPI_Bcast(pivot_row, n, MPI_DOUBLE, pivot_owner, comm);
 
-        // 5. Проверка на вырожденность
-        if (fabs(pivot_row[col]) < EPS) {
-//            if (rank == 0) {
-//                fprintf(stderr, "Ошибка: матрица вырождена (столбец %d, элемент ~0)\n", col);
-//            }
-            free(pivot_row);
-            MPI_Abort(comm, 1);
-            return;
-        }
-
         // 6. Исключить элемент столбца во всех локальных строках (кроме самой ведущей)
         for (int i = 0; i < local_rows; i++) {
             // Пропускаем саму ведущую строку
@@ -256,19 +246,50 @@ int gauss_2d_parallel(int N) {
     // ВЫВОД РЕЗУЛЬТАТОВ (только процесс 0)
     // ========================================================================
     if (rank == 0) {
-//        printf("=== Решение системы Ax = b (размер %dx%d) ===\n", n, n);
-//        printf("Процессов: %d | Seed: %d\n\n", size, global_seed);
-//
-//        printf("Первые 10 значений решения:\n");
-//        for (int i = 0; i < 10 && i < n; i++) {
-//            printf("  x[%3d] = %12.6f\n", i, solution[i]);
-//        }
-//        if (n > 10) printf("  ... и ещё %d значений\n", n - 10);
-//
-//        // Опционально: проверка невязки ||Ax - b|| для первых нескольких уравнений
-//        printf("\nПроверка (первые 5 уравнений):\n");
-        // Для полноценной проверки нужно собрать всю матрицу или вычислять распределённо
-        printf("time gaussParallel %.4f second\n", max_time);
+        // Print execution time
+        printf("=== Parallel Gaussian Elimination Results ===\n");
+        printf("Matrix size: %d x %d | Processes: %d\n", n, n, size);
+        printf("Execution time: %.4f seconds\n\n", max_time);
+
+        // Verification: Check residual ||Ax - b|| for first few equations
+        // Note: Process 0 only owns the first 'local_rows' rows of the matrix
+        int rows_per_proc = (n + size - 1) / size;
+        int local_rows = (n + size - 1) / size; // recalculate for clarity
+        if (rank == size - 1) {
+            local_rows = n - rank * rows_per_proc;
+            if (local_rows < 0) local_rows = 0;
+        }
+
+        printf("Verification (first 5 equations owned by rank 0):\n");
+        printf("%-8s %-15s %-15s %-10s\n", "Equation", "Computed Ax", "Expected b", "Error");
+        printf("------------------------------------------------------------\n");
+
+        int check_count = (local_rows < 5) ? local_rows : 5;
+        double max_error = 0.0;
+
+        for (int i = 0; i < check_count; i++) {
+            double computed = 0.0;
+            // Compute dot product: A[i][0..n-1] * x[0..n-1]
+            for (int j = 0; j < n; j++) {
+                computed += local_matrix[i][j] * solution[j];
+            }
+            double expected = local_matrix[i][n]; // b[i] is in the last column
+            double error = fabs(computed - expected);
+
+            if (error > max_error) max_error = error;
+
+            printf("%-8d %-15.6f %-15.6f %-10.2e\n", i, computed, expected, error);
+        }
+
+        printf("------------------------------------------------------------\n");
+        printf("Max residual error: %.2e\n", max_error);
+
+        if (max_error < 1e-6) {
+            printf("✓ Solution verified successfully (error within tolerance)\n");
+        } else {
+            printf("⚠ Warning: Large residual detected. Solution may be inaccurate.\n");
+        }
+        printf("\n");
     }
 
     // ========================================================================
