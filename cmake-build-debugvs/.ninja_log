@@ -2,8 +2,8 @@
 4	15	7962255168926618	clean	64626adc15be3536
 10	151	7962255198546525	CMakeFiles/Gaus_Parallel.dir/gauss_1d.c.obj	ab1920b2cc849acb
 6	160	7962255198506567	CMakeFiles/Gaus_Parallel.dir/gauss_2d.c.obj	461337f6128bd7e8
-3	161	7962255198466559	CMakeFiles/Gaus_Parallel.dir/main.c.obj	ce737db213f80444
 14	176	7962255198586563	CMakeFiles/Gaus_Parallel.dir/test.c.obj	971be0d9104a82ae
 18	217	7962255198626543	CMakeFiles/Gaus_Parallel.dir/gauss_2d_parallel.c.obj	7972f00794fd7c4
+3	161	7962255198466559	CMakeFiles/Gaus_Parallel.dir/main.c.obj	ce737db213f80444
 26	224	7962255198696557	CMakeFiles/Gaus_Parallel.dir/gauss_1d_parallel.c.obj	1838de4b993e2d11
 225	597	7962255200686546	Gaus_Parallel.exe	52636b565f828b6b
