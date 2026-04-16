@@ -6,8 +6,8 @@
 double* gauss_1d(int n, double *A, double *b){
     double *x = malloc(n * sizeof(double));
     // Выделяем память под копии
-    double *a = malloc(n * n * sizeof(double));
-    double *bb = malloc(n * sizeof(double));
+    double *a = calloc(n * n, sizeof(double));
+    double *bb = calloc(n, sizeof(double));
 
     // Копируем данные
     for (int i = 0; i < n; i++) {

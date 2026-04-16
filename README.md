@@ -1,6 +1,4 @@
 ## Инструкция по запуску на linux
-Выбирайте ветку For_linux
-
 sudo apt update
 
 sudo apt install gcc openmpi-bin libopenmpi-dev -y

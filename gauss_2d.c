@@ -7,9 +7,9 @@ double* gauss_2d(int n, double **A, double *b) {
     double *x = malloc(n * sizeof(double));
 
     // ✅ Выделяем память как массив указателей (вместо VLA)
-    double **a = (double **)malloc(n * sizeof(double *));
+    double **a = (double **)calloc(n, sizeof(double *));
     for (int i = 0; i < n; i++) {
-        a[i] = (double *)malloc(n * sizeof(double));
+        a[i] = (double *)calloc(n, sizeof(double));
     }
     double *bb = malloc(n * sizeof(double));
 
