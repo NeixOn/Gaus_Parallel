@@ -16,6 +16,7 @@ add_executable(Gaus_Parallel
         gauss_1d_parallel.c
         matrix_io.c
         main_mpi.c
+        gen_matrix.c
 )
 
 target_link_libraries(Gaus_Parallel PRIVATE MPI::MPI_C)

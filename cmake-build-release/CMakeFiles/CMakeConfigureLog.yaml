@@ -337,3 +337,33 @@ events:
         
       exitCode: 0
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/JetBrains/CLion2024.2/bin/cmake/win/x64/share/cmake-3.29/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "C:/Program Files/JetBrains/CLion2024.2/bin/cmake/win/x64/share/cmake-3.29/Modules/FindMPI.cmake:1322 (_MPI_try_staged_settings)"
+      - "C:/Program Files/JetBrains/CLion2024.2/bin/cmake/win/x64/share/cmake-3.29/Modules/FindMPI.cmake:1645 (_MPI_check_lang_works)"
+      - "CMakeLists.txt:7 (find_package)"
+    description: "The MPI test test_mpi for C in mode normal"
+    directories:
+      source: "C:/Users/developer/CLionProjects/Gaus_Parallel/cmake-build-release/CMakeFiles/CMakeScratch/TryCompile-ama7vk"
+      binary: "C:/Users/developer/CLionProjects/Gaus_Parallel/cmake-build-release/CMakeFiles/CMakeScratch/TryCompile-ama7vk"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_C_test_mpi_normal"
+      cached: true
+      stdout: |
+        Change Dir: 'C:/Users/developer/CLionProjects/Gaus_Parallel/cmake-build-release/CMakeFiles/CMakeScratch/TryCompile-ama7vk'
+        
+        Run Build Command(s): "C:/Program Files/JetBrains/CLion2024.2/bin/ninja/win/x64/ninja.exe" -v cmTC_232af
+        [1/2] C:\\PROGRA~1\\JETBRA~1\\CLION2~1.2\\bin\\mingw\\bin\\gcc.exe  -isystem "C:/Program Files (x86)/Microsoft SDKs/MPI/Include" -std=gnu11 -fdiagnostics-color=always -o CMakeFiles/cmTC_232af.dir/test_mpi.c.obj -c C:/Users/developer/CLionProjects/Gaus_Parallel/cmake-build-release/CMakeFiles/CMakeScratch/TryCompile-ama7vk/test_mpi.c
+        [2/2] C:\\WINDOWS\\system32\\cmd.exe /C "cd . && C:\\PROGRA~1\\JETBRA~1\\CLION2~1.2\\bin\\mingw\\bin\\gcc.exe   CMakeFiles/cmTC_232af.dir/test_mpi.c.obj -o cmTC_232af.exe -Wl,--out-implib,libcmTC_232af.dll.a -Wl,--major-image-version,0,--minor-image-version,0  "C:/Program Files (x86)/Microsoft SDKs/MPI/Lib/x64/msmpi.lib"  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 && cd ."
+        
+      exitCode: 0
+...

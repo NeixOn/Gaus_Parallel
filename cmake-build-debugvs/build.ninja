@@ -113,6 +113,14 @@ build CMakeFiles\Gaus_Parallel.dir\main_mpi.c.obj: C_COMPILER__Gaus_Parallel_uns
   TARGET_COMPILE_PDB = CMakeFiles\Gaus_Parallel.dir\
   TARGET_PDB = Gaus_Parallel.pdb
 
+build CMakeFiles\Gaus_Parallel.dir\gen_matrix.c.obj: C_COMPILER__Gaus_Parallel_unscanned_Debug C$:\Users\developer\CLionProjects\Gaus_Parallel\gen_matrix.c || cmake_object_order_depends_target_Gaus_Parallel
+  FLAGS = /DWIN32 /D_WINDOWS /Zi /Ob0 /Od /RTC1 -std:c11 -MDd -O0
+  INCLUDES = -external:I"C:\Program Files (x86)\Microsoft SDKs\MPI\Include" -external:W0
+  OBJECT_DIR = CMakeFiles\Gaus_Parallel.dir
+  OBJECT_FILE_DIR = CMakeFiles\Gaus_Parallel.dir
+  TARGET_COMPILE_PDB = CMakeFiles\Gaus_Parallel.dir\
+  TARGET_PDB = Gaus_Parallel.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Gaus_Parallel
@@ -121,7 +129,7 @@ build CMakeFiles\Gaus_Parallel.dir\main_mpi.c.obj: C_COMPILER__Gaus_Parallel_uns
 #############################################
 # Link the executable Gaus_Parallel.exe
 
-build Gaus_Parallel.exe: C_EXECUTABLE_LINKER__Gaus_Parallel_Debug CMakeFiles\Gaus_Parallel.dir\main.c.obj CMakeFiles\Gaus_Parallel.dir\gauss_2d.c.obj CMakeFiles\Gaus_Parallel.dir\gauss_1d.c.obj CMakeFiles\Gaus_Parallel.dir\test.c.obj CMakeFiles\Gaus_Parallel.dir\gauss_2d_parallel.c.obj CMakeFiles\Gaus_Parallel.dir\gauss_1d_parallel.c.obj CMakeFiles\Gaus_Parallel.dir\matrix_io.c.obj CMakeFiles\Gaus_Parallel.dir\main_mpi.c.obj | C$:\Program$ Files$ (x86)\Microsoft$ SDKs\MPI\Lib\x64\msmpi.lib
+build Gaus_Parallel.exe: C_EXECUTABLE_LINKER__Gaus_Parallel_Debug CMakeFiles\Gaus_Parallel.dir\main.c.obj CMakeFiles\Gaus_Parallel.dir\gauss_2d.c.obj CMakeFiles\Gaus_Parallel.dir\gauss_1d.c.obj CMakeFiles\Gaus_Parallel.dir\test.c.obj CMakeFiles\Gaus_Parallel.dir\gauss_2d_parallel.c.obj CMakeFiles\Gaus_Parallel.dir\gauss_1d_parallel.c.obj CMakeFiles\Gaus_Parallel.dir\matrix_io.c.obj CMakeFiles\Gaus_Parallel.dir\main_mpi.c.obj CMakeFiles\Gaus_Parallel.dir\gen_matrix.c.obj | C$:\Program$ Files$ (x86)\Microsoft$ SDKs\MPI\Lib\x64\msmpi.lib
   FLAGS = /DWIN32 /D_WINDOWS /Zi /Ob0 /Od /RTC1 -MDd
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = "C:\Program Files (x86)\Microsoft SDKs\MPI\Lib\x64\msmpi.lib"  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
