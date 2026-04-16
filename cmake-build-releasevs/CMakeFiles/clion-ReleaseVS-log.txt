@@ -1,4 +1,4 @@
 "C:\Program Files\JetBrains\CLion2024.2\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Release "-DCMAKE_MAKE_PROGRAM=C:/Program Files/JetBrains/CLion2024.2/bin/ninja/win/x64/ninja.exe" -G Ninja -S C:\Users\developer\CLionProjects\Gaus_Parallel -B C:\Users\developer\CLionProjects\Gaus_Parallel\cmake-build-releasevs
--- Configuring done (1.7s)
+-- Configuring done (5.5s)
 -- Generating done (0.0s)
 -- Build files have been written to: C:/Users/developer/CLionProjects/Gaus_Parallel/cmake-build-releasevs

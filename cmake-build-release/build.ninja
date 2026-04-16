@@ -91,6 +91,20 @@ build CMakeFiles/Gaus_Parallel.dir/gauss_1d_parallel.c.obj: C_COMPILER__Gaus_Par
   OBJECT_DIR = CMakeFiles\Gaus_Parallel.dir
   OBJECT_FILE_DIR = CMakeFiles\Gaus_Parallel.dir
 
+build CMakeFiles/Gaus_Parallel.dir/matrix_io.c.obj: C_COMPILER__Gaus_Parallel_unscanned_Release C$:/Users/developer/CLionProjects/Gaus_Parallel/matrix_io.c || cmake_object_order_depends_target_Gaus_Parallel
+  DEP_FILE = CMakeFiles\Gaus_Parallel.dir\matrix_io.c.obj.d
+  FLAGS = -O3 -DNDEBUG -std=gnu11 -fdiagnostics-color=always -O3
+  INCLUDES = -isystem "C:/Program Files (x86)/Microsoft SDKs/MPI/Include"
+  OBJECT_DIR = CMakeFiles\Gaus_Parallel.dir
+  OBJECT_FILE_DIR = CMakeFiles\Gaus_Parallel.dir
+
+build CMakeFiles/Gaus_Parallel.dir/main_mpi.c.obj: C_COMPILER__Gaus_Parallel_unscanned_Release C$:/Users/developer/CLionProjects/Gaus_Parallel/main_mpi.c || cmake_object_order_depends_target_Gaus_Parallel
+  DEP_FILE = CMakeFiles\Gaus_Parallel.dir\main_mpi.c.obj.d
+  FLAGS = -O3 -DNDEBUG -std=gnu11 -fdiagnostics-color=always -O3
+  INCLUDES = -isystem "C:/Program Files (x86)/Microsoft SDKs/MPI/Include"
+  OBJECT_DIR = CMakeFiles\Gaus_Parallel.dir
+  OBJECT_FILE_DIR = CMakeFiles\Gaus_Parallel.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Gaus_Parallel
@@ -99,7 +113,7 @@ build CMakeFiles/Gaus_Parallel.dir/gauss_1d_parallel.c.obj: C_COMPILER__Gaus_Par
 #############################################
 # Link the executable Gaus_Parallel.exe
 
-build Gaus_Parallel.exe: C_EXECUTABLE_LINKER__Gaus_Parallel_Release CMakeFiles/Gaus_Parallel.dir/main.c.obj CMakeFiles/Gaus_Parallel.dir/gauss_2d.c.obj CMakeFiles/Gaus_Parallel.dir/gauss_1d.c.obj CMakeFiles/Gaus_Parallel.dir/test.c.obj CMakeFiles/Gaus_Parallel.dir/gauss_2d_parallel.c.obj CMakeFiles/Gaus_Parallel.dir/gauss_1d_parallel.c.obj | C$:/Program$ Files$ (x86)/Microsoft$ SDKs/MPI/Lib/x64/msmpi.lib
+build Gaus_Parallel.exe: C_EXECUTABLE_LINKER__Gaus_Parallel_Release CMakeFiles/Gaus_Parallel.dir/main.c.obj CMakeFiles/Gaus_Parallel.dir/gauss_2d.c.obj CMakeFiles/Gaus_Parallel.dir/gauss_1d.c.obj CMakeFiles/Gaus_Parallel.dir/test.c.obj CMakeFiles/Gaus_Parallel.dir/gauss_2d_parallel.c.obj CMakeFiles/Gaus_Parallel.dir/gauss_1d_parallel.c.obj CMakeFiles/Gaus_Parallel.dir/matrix_io.c.obj CMakeFiles/Gaus_Parallel.dir/main_mpi.c.obj | C$:/Program$ Files$ (x86)/Microsoft$ SDKs/MPI/Lib/x64/msmpi.lib
   FLAGS = -O3 -DNDEBUG
   LINK_LIBRARIES = "C:/Program Files (x86)/Microsoft SDKs/MPI/Lib/x64/msmpi.lib"  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Gaus_Parallel.dir

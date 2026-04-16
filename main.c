@@ -1,27 +1,33 @@
-// В main.c:
-#include <mpi.h>
-#include <stdlib.h>
 #include "gauss.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
-int main(int argc, char** argv) {
-    MPI_Init(&argc, &argv);
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+int main(int argc, char* argv[]) {
+    const char* input  = (argc > 1) ? argv[1] : "matrix.txt";
+    const char* output = (argc > 2) ? argv[2] : "solution_seq.txt";
 
-    int N = 4000;
-    int mode = 0;  // 0=2d, 1=1d, 2=seq
+    int n; double *A = NULL, *b = NULL;
+    printf("📥 Загрузка: %s\n", input);
+    if (load_system_from_txt(input, &n, &A, &b) != 0) return 1;
 
-    if (argc > 1) N = atoi(argv[1]);
-    if (argc > 2) mode = atoi(argv[2]);
-
-    if (mode == 0) {
-        gauss_2d_parallel(N);
-    } else if (mode == 1) {
-        gauss_1d_parallel(N);
-    } else if (mode == 2 && rank == 0) {
-        run_test(N, false);
+    // 1D версия
+    double *x1 = gauss_1d(n, A, b);
+    if (x1) {
+        save_solution_to_txt(output, n, x1);
+        printf("✅ 1D решение сохранено в %s\n", output);
+        free(x1);
     }
 
-    MPI_Finalize();
+    // 2D версия
+    double **A2d = flat_to_2d(n, A);
+    double *x2 = gauss_2d(n, A2d, b);
+    if (x2) {
+        char out2[256]; snprintf(out2, sizeof(out2), "%s_2d.txt", output);
+        save_solution_to_txt(out2, n, x2);
+        printf("✅ 2D решение сохранено в %s\n", out2);
+        free(x2);
+    }
+    free(A2d); free(A); free(b);
     return 0;
 }

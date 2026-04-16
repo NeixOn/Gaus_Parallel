@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Gaus_Parallel::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Gaus_Parallel-Release-e71d92d6953037686ba9.json",
+					"jsonFile" : "target-Gaus_Parallel-Release-6f7458a55a1a2f330821.json",
 					"name" : "Gaus_Parallel",
 					"projectIndex" : 0
 				}
@@ -49,7 +49,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/developer/CLionProjects/Gaus_Parallel/cmake-build-release",
+		"build" : "C:/Users/developer/CLionProjects/Gaus_Parallel/cmake-build-releasevs",
 		"source" : "C:/Users/developer/CLionProjects/Gaus_Parallel"
 	},
 	"version" : 
