@@ -1,8 +1,9 @@
 ## Инструкция по запуску на linux
 Выбирайте ветку For_linux
-sudo apt update
-sudo apt install gcc openmpi-bin libopenmpi-dev -y
 
+sudo apt update
+
+sudo apt install gcc openmpi-bin libopenmpi-dev -y
 
 mpicc -std=c11 -O2 -Wall -o gauss main.c gauss_1d.c gauss_2d.c gauss_1d_parallel.c gauss_2d_parallel.c test.c -lm
 
